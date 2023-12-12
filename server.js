@@ -2,7 +2,6 @@ const express = require('express');
 const fs = require('fs');
 const { MongoClient } = require('mongodb');
 
-
 // ================ Server Config ================ 
 const PORT = process.env.PORT || 3000;
 const HOST = 'localhost';
@@ -17,21 +16,6 @@ const URI = `mongodb+srv://${USERNAME}:${PASSWORD}@cluster0.s9daasc.mongodb.net/
 // ============ Database Server Config ===========
 
 const client = new MongoClient(URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
-async function connectToMongoDB() {
-    try {
-
-        await client.connect();
-
-        const db = client.db(DATABASE_NAME);
-        const lesson_collection = db.collection(LESSON_COLLECTION);
-
-    } catch (err) {
-        console.error('Error connecting to MongoDB Atlas', err);
-    }
-}
-
-connectToMongoDB();
 
 
 const app = express();
@@ -54,6 +38,47 @@ const logger = (req, res, next) => {
 };
 
 app.use(logger);
+
+// ================== Lessons End Points ================== 
+app.get('/lessons', async (req, res) => {
+    try {
+        await client.connect();
+
+        const database = client.db(DATABASE_NAME);
+        const lesson_collection = database.collection(LESSON_COLLECTION);
+
+        const lessons = await lesson_collection.find({}).toArray();
+
+        res.json(lessons);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    } finally {
+        await client.close();
+    }
+});
+
+app.get('/lessons/:id', async (req, res) => {
+    try {
+        const lessonId = req.params.id;
+
+        const database = client.db(DATABASE_NAME);
+        const lesson_collection = database.collection(LESSON_COLLECTION);
+
+        // Find the lesson by its ID
+        const lesson = await lesson_collection.findOne({ id: parseInt(lessonId) });
+
+        if (!lesson) {
+            return res.status(404).json({ message: 'Lesson not found' });
+        }
+
+        res.json(lesson);
+    } catch (err) {
+        console.error('Error fetching lesson', err);
+        res.status(500).json({ error: 'Failed to fetch lesson' });
+    }
+});
+
+// ================== Lessons End Points ================== 
 
 app.listen(PORT, HOST, () => {
     console.log(`Server is listening on http://${HOST}:${PORT}`);
