@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const { MongoClient } = require('mongodb');
+const bodyParser = require('body-parser');
 
 // ================ Server Config ================ 
 const PORT = process.env.PORT || 3000;
@@ -8,8 +9,10 @@ const HOST = 'localhost';
 // ================ Server Config ================ 
 
 // ============ Database Server Config ===========
-const DATABASE_NAME = "db_after_school_hub";
-const LESSON_COLLECTION = "lesson";
+const CLUSTER = 'cluster0';
+const DATABASE_NAME = 'db_after_school_hub';
+const LESSON_COLLECTION = 'lesson';
+const ORDER_COLLECTION = 'order';
 const USERNAME = 'cstefan01';
 const PASSWORD = 'database1';
 const URI = `mongodb+srv://${USERNAME}:${PASSWORD}@cluster0.s9daasc.mongodb.net/?retryWrites=true&w=majority`;
@@ -19,6 +22,10 @@ const client = new MongoClient(URI, { useNewUrlParser: true, useUnifiedTopology:
 
 
 const app = express();
+
+
+// ================== Middleware ========================== 
+app.use(bodyParser.json());
 
 const logger = (req, res, next) => {
     const { method, originalUrl, protocol } = req;
@@ -38,6 +45,8 @@ const logger = (req, res, next) => {
 };
 
 app.use(logger);
+
+// ================== Middleware ========================== 
 
 // ================== Lessons End Points ================== 
 app.get('/lessons', async (req, res) => {
@@ -79,6 +88,34 @@ app.get('/lessons/:id', async (req, res) => {
 });
 
 // ================== Lessons End Points ================== 
+
+// ================== Orders End Points ================== 
+
+app.post('/orders', async (req, res) => {
+    try {
+        const database = client.db(DATABASE_NAME);
+        const order_collection = database.collection(ORDER_COLLECTION);
+
+        const order = req.body;
+
+        if (!order.order_id || !order.customer || !order.lessons || !order.sub_total || !order.total) {
+            return res.status(400).json({ error: 'Invalid order data' });
+        }
+
+        const result = await order_collection.insertOne(order);
+
+        if (result.acknowledged) {
+            res.status(201).json({ message: 'Order created successfully', orderId: result.insertedId });
+        } else {
+            res.status(500).json({ error: 'Failed to create order' });
+        }
+    } catch (err) {
+        console.error('Error creating order', err);
+        res.status(500).json({ error: 'Failed to create order' });
+    }
+});
+
+// ================== Orders End Points ================== 
 
 app.listen(PORT, HOST, () => {
     console.log(`Server is listening on http://${HOST}:${PORT}`);
