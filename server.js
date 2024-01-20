@@ -13,7 +13,7 @@ const app = express();
 // ================== Middleware ==================
 const request_logger = require('./middleware/logger');
 
-app.use(request_logger.recordRequest);
+//app.use(request_logger.recordRequest);
 // ================== Middleware ==================
 
 // ================== End Points ==================
