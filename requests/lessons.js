@@ -8,10 +8,22 @@ const getLessons = async (req, res) => {
     try {
         await client.connect();
 
+        const query = {};
+
+        // Check for search parameter
+        if (req.query.search) {
+            const searchRegex = new RegExp(req.query.search, 'i');
+            // Use a case-insensitive regex for partial subject or location matching
+            query.$or = [
+                { subject: { $regex: searchRegex } },
+                { location: { $regex: searchRegex } }
+            ];
+        }
+
         const database = client.db(config.dbName);
         const lesson_collection = database.collection(config.db_lesson_collection);
 
-        const lessons = await lesson_collection.find({}).toArray();
+        const lessons = await lesson_collection.find(query).toArray();
 
         res.json(lessons);
     } catch (err) {
