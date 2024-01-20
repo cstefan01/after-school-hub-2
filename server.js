@@ -1,7 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const config = require("./conf/config");
+
+const request_logger = require('./middleware/logger');
 
 // =============== Routes ===============
 const lessonsRoute = require('./routes/lessons');
@@ -11,7 +14,8 @@ const ordersRoute = require('./routes/orders');
 const app = express();
 
 // ================== Middleware ==================
-const request_logger = require('./middleware/logger');
+
+app.use(cors());
 
 app.use(request_logger.recordRequest);
 // ================== Middleware ==================
