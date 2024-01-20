@@ -1,4 +1,5 @@
 const path = require('path');
+const os = require('os');
 
 const propertiesReader = require("properties-reader");
 const propertiesPath = path.resolve(__dirname, "../conf/db.properties");
@@ -15,9 +16,8 @@ const db_order_collection = properties.get("db.collections.order");
 
 const dbUri = `${dbPrefix}://${dbUsername}:${dbPwd}@${dbUrl}/?${dbParams}`;
 
-
-const host = 'localhost';
 const port = process.env.PORT || 3000;
+const host = os.hostname();
 
 module.exports = {
     dbPrefix,
@@ -29,6 +29,6 @@ module.exports = {
     db_lesson_collection,
     db_order_collection,
     dbUri,
-    host,
     port,
+    host
 }
