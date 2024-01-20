@@ -21,7 +21,7 @@ app.use(lessonsRoute);
 app.use(ordersRoute);
 // ================== End Points ==================
 
-app.listen(config.port, config.host, () => {
+app.listen(config.port, () => {
     console.log(`Server is listening on http://${config.host}:${config.port}`);
 })
 
