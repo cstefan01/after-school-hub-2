@@ -5,6 +5,7 @@ const config = require('../conf/config');
 const client = new MongoClient(config.dbUri);
 
 const getLessons = async (req, res) => {
+    console.log("request fired...")
     try {
         await client.connect();
 
