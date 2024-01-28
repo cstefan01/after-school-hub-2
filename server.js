@@ -9,11 +9,12 @@ const app = express();
 // ================== Middleware ==================
 const { recordRequest } = require('./middleware/logger');
 const { getImage } = require('./middleware/image');
+const middlewareRoute = require('./routes/middleware');
 
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 app.use(recordRequest);
-app.use('/images/:filename', getImage)
+app.use(middlewareRoute);
 
 // ================== Middleware ==================
 
