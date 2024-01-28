@@ -1,24 +1,25 @@
 const fs = require('fs');
 const path = require('path');
 
-const get = (req, res, next) => {
-    const imagePath = path.join(__dirname, '../images', req.params.filename); // Assuming images are stored in a folder named 'images'
+const getImage = (req, res, next) => {
+    const imagePath = path.join(__dirname, '../images', req.params.filename);
 
-    // Check if the file exists
+    // Check if the image file exists
     fs.access(imagePath, fs.constants.F_OK, (err) => {
         if (err) {
-            // File does not exist
-            res.status(404).json({ error: 'Image not found' });
-        } else {
-            // File exists, continue to the next middleware
-            next();
+            // If the file doesn't exist, send a 404 response
+            return res.status(404).send('Image not found');
         }
+
+        // If the file exists, set the appropriate headers and send the file
+        res.setHeader('Content-Type', 'image/jpeg'); // Adjust the content type based on your image type
+        fs.createReadStream(imagePath).pipe(res);
     });
 };
 
 
 
 module.exports = {
-    get
+    getImage
 
 }

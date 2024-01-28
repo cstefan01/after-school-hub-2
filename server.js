@@ -7,12 +7,13 @@ const config = require("./conf/config");
 const app = express();
 
 // ================== Middleware ==================
-const request_logger = require('./middleware/logger');
-const image_middleware = require('./middleware/image');
+const { recordRequest } = require('./middleware/logger');
+const { getImage } = require('./middleware/image');
 
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
-app.use(request_logger.recordRequest);
+app.use(recordRequest);
+app.use('/images/:filename', getImage)
 
 // ================== Middleware ==================
 

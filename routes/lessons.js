@@ -1,11 +1,11 @@
 const express = require('express');
-const lessonsRequests = require('../requests/lessons');
+const { getLessons, getLessonByID, postLesson, updateLessonSpaces } = require('../requests/lessons');
 
 const router = express.Router();
 
-router.get('/lessons', lessonsRequests.getLessons);
-router.get('/lessons/:id', lessonsRequests.getLessonByID);
-router.post('/lessons', lessonsRequests.postLesson);
-router.put('/lessons/:id', lessonsRequests.updateLessonSpaces)
+router.get('/lessons', getLessons);
+router.get('/lessons/:id', getLessonByID);
+router.post('/lessons', postLesson);
+router.put('/lessons/:id', updateLessonSpaces)
 
 module.exports = router;

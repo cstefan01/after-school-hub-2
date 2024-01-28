@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 const recordRequest = (req, res, next) => {
     const { method, originalUrl, protocol } = req;
     const timestamp = new Date().toISOString();
