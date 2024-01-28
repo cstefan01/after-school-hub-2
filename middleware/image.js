@@ -13,8 +13,6 @@ const getImage = (req, res, next) => {
     });
 };
 
-
-
 module.exports = {
     getImage
 
